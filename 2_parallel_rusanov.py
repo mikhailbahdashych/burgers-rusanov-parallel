@@ -353,7 +353,7 @@ class BurgersRusanovParallel:
             print(f"Elapsed time: {elapsed_time:.6f} seconds")
             print(f"Average time per step: {elapsed_time/self.n_steps:.6e} seconds")
 
-            return u_final, self.snapshots, self.snapshot_times
+            return u_final, self.snapshots, self.snapshot_times, elapsed_time
         else:
             return None
 
@@ -394,7 +394,7 @@ def main():
 
     # Save results (only on root)
     if rank == 0:
-        u_final, snapshots, snapshot_times = result
+        u_final, snapshots, snapshot_times, elapsed_time = result
 
         np.savez(args.save,
                  x=solver.x_global,
@@ -404,7 +404,9 @@ def main():
                  nx=args.nx,
                  nu=args.nu,
                  t_final=args.t_final,
-                 n_procs=comm.Get_size())
+                 n_procs=comm.Get_size(),
+                 elapsed_time=elapsed_time,
+                 n_steps=solver.n_steps)
 
         print(f"\nResults saved to {args.save}")
 
