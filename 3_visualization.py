@@ -27,6 +27,9 @@ def plot_solution_evolution(x: np.ndarray, snapshots: np.ndarray,
         times: Time values for each snapshot
         output_file: Output file path (if None, display interactively)
     """
+    import os
+    os.makedirs('plots', exist_ok=True)
+
     n_snapshots = len(snapshots)
 
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -66,6 +69,9 @@ def plot_shock_analysis(x: np.ndarray, snapshots: np.ndarray,
         times: Time values
         output_file: Output file path
     """
+    import os
+    os.makedirs('plots', exist_ok=True)
+
     n_snapshots = len(snapshots)
 
     # Create figure with multiple subplots
@@ -295,11 +301,11 @@ def main():
 
     # Generate visualization based on type
     if args.type == 'evolution':
-        output = args.output or 'solution_evolution.png'
+        output = args.output or 'plots/solution_evolution_parallel.png'
         plot_solution_evolution(x, snapshots, times, output)
 
     elif args.type == 'shock':
-        output = args.output or 'shock_analysis.png'
+        output = args.output or 'plots/shock_analysis_parallel.png'
         plot_shock_analysis(x, snapshots, times, output)
 
     elif args.type == 'frames':

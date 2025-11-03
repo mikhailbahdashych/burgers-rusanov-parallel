@@ -24,7 +24,7 @@ class BurgersRusanovParallel:
     """Parallel MPI Rusanov solver for the 1D Burgers equation."""
 
     def __init__(self, nx_global: int, domain: Tuple[float, float],
-                 t_final: float, cfl: float = 0.5, nu: float = 0.01,
+                 t_final: float, cfl: float = 0.3, nu: float = 0.1,
                  comm: Optional[MPI.Comm] = None):
         """
         Initialize the parallel Burgers equation solver.
@@ -59,7 +59,8 @@ class BurgersRusanovParallel:
         if self.rank == 0:
             self.snapshots = []
             self.snapshot_times = []
-            self.x_global = np.linspace(self.x_min, self.x_max, nx_global)
+            # For periodic domain: endpoint=False
+            self.x_global = np.linspace(self.x_min, self.x_max, nx_global, endpoint=False)
 
     def _setup_domain_decomposition(self):
         """Set up domain decomposition across MPI processes."""
@@ -79,15 +80,13 @@ class BurgersRusanovParallel:
         # Create local grid (including ghost/halo cells)
         # Ghost cells: one on each side for boundary exchange
         self.nx_with_ghosts = self.nx_local + 2
-        dx = (self.x_max - self.x_min) / (self.nx_global - 1)
+        # For periodic domain: dx = L / nx (NOT nx-1)
+        dx = (self.x_max - self.x_min) / self.nx_global
         self.dx = dx
 
         # Local coordinates (without ghosts)
         x_start = self.x_min + self.i_start * dx
-        x_end = self.x_min + self.i_end * dx
-        self.x_local = np.linspace(x_start, x_end, self.nx_local + 1)[:-1]
-        if self.rank == self.size - 1:
-            self.x_local = np.linspace(x_start, x_end, self.nx_local)
+        self.x_local = x_start + np.arange(self.nx_local) * dx
 
         # Solution array with ghost cells: [ghost_left, interior, ghost_right]
         self.u = np.zeros(self.nx_with_ghosts)
@@ -111,7 +110,8 @@ class BurgersRusanovParallel:
         """
         # Create global initial condition on root
         if self.rank == 0:
-            x_global = np.linspace(self.x_min, self.x_max, self.nx_global)
+            # For periodic domain: endpoint=False
+            x_global = np.linspace(self.x_min, self.x_max, self.nx_global, endpoint=False)
 
             if ic_type == 'sine':
                 u_global = 0.5 + 0.5 * np.sin(2 * np.pi * x_global)
@@ -227,7 +227,8 @@ class BurgersRusanovParallel:
             dt_convection = self.cfl * self.dx / 1e-10
 
         if self.nu > 0:
-            dt_diffusion = 0.5 * self.dx**2 / self.nu
+            # Conservative diffusion stability factor (0.25 instead of 0.5)
+            dt_diffusion = 0.25 * self.dx**2 / self.nu
             return min(dt_convection, dt_diffusion)
 
         return dt_convection
@@ -363,11 +364,11 @@ def main():
     rank = comm.Get_rank()
 
     parser = argparse.ArgumentParser(description='Parallel MPI Rusanov solver')
-    parser.add_argument('--nx', type=int, default=400, help='Global grid points')
+    parser.add_argument('--nx', type=int, default=300, help='Global grid points')
     parser.add_argument('--domain', type=float, nargs=2, default=[0.0, 1.0])
     parser.add_argument('--t-final', type=float, default=0.5)
-    parser.add_argument('--cfl', type=float, default=0.5)
-    parser.add_argument('--nu', type=float, default=0.01)
+    parser.add_argument('--cfl', type=float, default=0.3)
+    parser.add_argument('--nu', type=float, default=0.1)
     parser.add_argument('--ic', type=str, default='sine',
                        choices=['sine', 'step', 'rarefaction'])
     parser.add_argument('--snapshots', type=int, default=10)

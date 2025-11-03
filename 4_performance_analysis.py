@@ -401,10 +401,10 @@ def run_scaling_study(nx: int, t_final: float, max_procs: int,
         elapsed = time.time() - start
 
         if result.returncode == 0:
-            print(f"  ✓ Completed in {elapsed:.4f} seconds")
+            print(f"  => Completed in {elapsed:.4f} seconds")
             analyzer.add_timing(n_procs, elapsed)
         else:
-            print(f"  ✗ Failed with return code {result.returncode}")
+            print(f"  X Failed with return code {result.returncode}")
             print(f"  Error: {result.stderr}")
 
     # Save timing results
