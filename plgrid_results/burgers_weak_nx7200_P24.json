@@ -1,0 +1,12 @@
+{
+  "method": "rusanov_mpi",
+  "nx": 7200,
+  "processes": 24,
+  "n_steps": 8294401,
+  "time": 350.4936330989003,
+  "converged": true,
+  "t_final": 0.2,
+  "cfl": 0.3,
+  "nu": 0.2,
+  "initial_condition": "sine"
+}

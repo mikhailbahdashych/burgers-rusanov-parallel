@@ -1,0 +1,29 @@
+{
+  "method": "rusanov_sequential",
+  "tolerance": null,
+  "t_final": 0.5,
+  "cfl": 0.3,
+  "nu": 0.1,
+  "initial_condition": "sine",
+  "vectorized": true,
+  "results": {
+    "1200": {
+      "n_steps": 288001,
+      "time": 7.658809185028076,
+      "converged": true,
+      "final_max_gradient": 0.4500574972203708
+    },
+    "2400": {
+      "n_steps": 1152001,
+      "time": 39.83643698692322,
+      "converged": true,
+      "final_max_gradient": 0.45104363400707825
+    },
+    "4800": {
+      "n_steps": 4608001,
+      "time": 335.1821858882904,
+      "converged": true,
+      "final_max_gradient": 0.4515369458617897
+    }
+  }
+}
