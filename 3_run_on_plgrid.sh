@@ -16,8 +16,8 @@
 # optimized to complete in reasonable time while demonstrating good scaling.
 #
 # Key optimizations:
-#   - Reduced viscosity: nu=0.2 (instead of 0.1) → 50% fewer timesteps
-#   - Reduced t_final: 0.2 (instead of 0.5) → 60% fewer timesteps
+#   - Reduced viscosity: nu=0.2 (instead of 0.1)  50% fewer timesteps
+#   - Reduced t_final: 0.2 (instead of 0.5)  60% fewer timesteps
 #   - Appropriate grid sizes: ensures completion in ~1 hour
 #
 # Expected results:
@@ -33,11 +33,12 @@ module load scipy-bundle/2021.10-intel-2021b
 mkdir -p plgrid_results
 mkdir -p logs
 
-# Optimized parameters for reasonable runtime
-T_FINAL=0.2
-NU=0.2
+# Optimized parameters for fast runtime (< 2 hours, max P=24)
+T_FINAL=0.1      # Reduced from 0.2  50% fewer timesteps
+NU=0.3           # Increased from 0.2  fewer timesteps
 CFL=0.3
 IC_TYPE="sine"
+SNAPSHOTS=3      # Reduced from 5  faster I/O
 
 echo "=============================================================================="
 echo "BURGERS EQUATION PARALLEL SCALING EXPERIMENTS"
@@ -50,6 +51,31 @@ echo "==========================================================================
 echo ""
 
 ################################################################################
+# QUICK VALIDATION TEST (catch errors early!)
+################################################################################
+
+echo ""
+echo "=============================================================================="
+echo "QUICK VALIDATION TEST"
+echo "=============================================================================="
+echo "Running quick test to ensure fixed code works correctly..."
+echo ""
+
+mpiexec -n 1 python 2_parallel_rusanov.py \
+    --nx 300 --t-final 0.01 --cfl $CFL --nu $NU \
+    --ic $IC_TYPE --snapshots 2 \
+    --save plgrid_results/validation_test.npz
+
+if [ $? -eq 0 ]; then
+    echo "[OK] Validation test passed - proceeding with full experiments"
+    echo ""
+else
+    echo "[FAILED] Validation test failed - aborting!"
+    echo "Please check the code before resubmitting."
+    exit 1
+fi
+
+################################################################################
 # PART 1: WEAK SCALING (300 cells/processor)
 ################################################################################
 
@@ -58,11 +84,11 @@ echo "==========================================================================
 echo "PART 1: WEAK SCALING EXPERIMENTS"
 echo "=============================================================================="
 echo "Strategy: Keep 300 cells per processor constant"
-echo "Expected: Time stays roughly constant, efficiency 70-85%"
+echo "Expected: Demonstrates weak scaling behavior"
 echo ""
 
 CELLS_PER_PROC=300
-WEAK_PROCS="1 2 4 8 16 24 32 48"
+WEAK_PROCS="1 4 8 16 24"  # Reduced test points for faster runtime
 
 for P in $WEAK_PROCS; do
     N=$((P * CELLS_PER_PROC))
@@ -78,7 +104,7 @@ for P in $WEAK_PROCS; do
         --cfl $CFL \
         --nu $NU \
         --ic $IC_TYPE \
-        --snapshots 5 \
+        --snapshots $SNAPSHOTS \
         --save $OUTPUT_FILE
 
     if [ $? -eq 0 ]; then
@@ -98,24 +124,10 @@ echo "==========================================================================
 echo "PART 2: STRONG SCALING EXPERIMENTS"
 echo "=============================================================================="
 echo "Strategy: Fixed grid sizes, increasing processors"
-echo "Rule: Minimum 150 cells/processor for good efficiency"
+echo "Focus on larger grids for better scaling demonstration"
 echo ""
 
-# Grid 1: nx=600 (small)
-echo "--- Grid Size: nx=600 ---"
-for P in 1 2 4; do
-    echo "  P=$P: $((600/P)) cells/proc"
-    OUTPUT_FILE="plgrid_results/burgers_strong_nx600_P${P}.npz"
-
-    mpiexec -n $P python 2_parallel_rusanov.py \
-        --nx 600 --t-final $T_FINAL --cfl $CFL --nu $NU \
-        --ic $IC_TYPE --snapshots 5 --save $OUTPUT_FILE
-
-    [ $? -eq 0 ] && echo "    [OK] $OUTPUT_FILE" || echo "    [FAILED]"
-done
-echo ""
-
-# Grid 2: nx=1200 (medium)
+# Grid 1: nx=1200 (medium)
 echo "--- Grid Size: nx=1200 ---"
 for P in 1 2 4 8; do
     echo "  P=$P: $((1200/P)) cells/proc"
@@ -123,35 +135,35 @@ for P in 1 2 4 8; do
 
     mpiexec -n $P python 2_parallel_rusanov.py \
         --nx 1200 --t-final $T_FINAL --cfl $CFL --nu $NU \
-        --ic $IC_TYPE --snapshots 5 --save $OUTPUT_FILE
+        --ic $IC_TYPE --snapshots $SNAPSHOTS --save $OUTPUT_FILE
 
     [ $? -eq 0 ] && echo "    [OK] $OUTPUT_FILE" || echo "    [FAILED]"
 done
 echo ""
 
-# Grid 3: nx=2400 (large)
+# Grid 2: nx=2400 (large)
 echo "--- Grid Size: nx=2400 ---"
-for P in 1 2 4 8 16; do
+for P in 1 4 8 16; do
     echo "  P=$P: $((2400/P)) cells/proc"
     OUTPUT_FILE="plgrid_results/burgers_strong_nx2400_P${P}.npz"
 
     mpiexec -n $P python 2_parallel_rusanov.py \
         --nx 2400 --t-final $T_FINAL --cfl $CFL --nu $NU \
-        --ic $IC_TYPE --snapshots 5 --save $OUTPUT_FILE
+        --ic $IC_TYPE --snapshots $SNAPSHOTS --save $OUTPUT_FILE
 
     [ $? -eq 0 ] && echo "    [OK] $OUTPUT_FILE" || echo "    [FAILED]"
 done
 echo ""
 
-# Grid 4: nx=4800 (extra large)
+# Grid 3: nx=4800 (extra large)
 echo "--- Grid Size: nx=4800 ---"
-for P in 1 2 4 8 16 24 32; do
+for P in 1 4 8 16 24; do
     echo "  P=$P: $((4800/P)) cells/proc"
     OUTPUT_FILE="plgrid_results/burgers_strong_nx4800_P${P}.npz"
 
     mpiexec -n $P python 2_parallel_rusanov.py \
         --nx 4800 --t-final $T_FINAL --cfl $CFL --nu $NU \
-        --ic $IC_TYPE --snapshots 5 --save $OUTPUT_FILE
+        --ic $IC_TYPE --snapshots $SNAPSHOTS --save $OUTPUT_FILE
 
     [ $? -eq 0 ] && echo "    [OK] $OUTPUT_FILE" || echo "    [FAILED]"
 done
@@ -163,25 +175,17 @@ echo ""
 
 echo ""
 echo "=============================================================================="
-echo "PART 3: SHOCK WAVE VISUALIZATION"
+echo "PART 3: SHOCK WAVE DEMONSTRATION"
 echo "=============================================================================="
-echo "Running simulations to demonstrate shock formation"
+echo "Running one shock demo for visualization"
 echo ""
 
 # Low viscosity for shock formation
 echo "--- Low Viscosity (nu=0.01) with Step IC ---"
 mpiexec -n 1 python 2_parallel_rusanov.py \
-    --nx 1200 --t-final 0.15 --cfl 0.2 --nu 0.01 \
-    --ic step --snapshots 10 \
+    --nx 1200 --t-final 0.1 --cfl 0.2 --nu 0.01 \
+    --ic step --snapshots 5 \
     --save plgrid_results/burgers_shock_step_nu001.npz
-echo ""
-
-# Very low viscosity with sine IC
-echo "--- Very Low Viscosity (nu=0.005) with Sine IC ---"
-mpiexec -n 1 python 2_parallel_rusanov.py \
-    --nx 1200 --t-final 0.15 --cfl 0.2 --nu 0.005 \
-    --ic sine --snapshots 10 \
-    --save plgrid_results/burgers_shock_sine_nu0005.npz
 echo ""
 
 ################################################################################
@@ -195,13 +199,19 @@ echo "==========================================================================
 echo "End time: $(date)"
 echo ""
 echo "Results summary:"
-echo "  Weak scaling: 8 runs (P=1,2,4,8,16,24,32,48)"
-echo "  Strong scaling: 4 grid sizes × multiple P = ~30 runs"
-echo "  Shock wave demos: 2 runs"
+echo "  Weak scaling: 5 runs (P=1,4,8,16,24)"
+echo "  Strong scaling: 3 grid sizes × multiple P = ~17 runs"
+echo "  Shock wave demo: 1 run"
+echo "  Total experiments: ~23 runs"
 echo ""
 echo "Total result files: $(ls plgrid_results/*.npz 2>/dev/null | wc -l)"
 echo ""
+echo "Parameters used:"
+echo "  t_final = $T_FINAL (reduced for speed)"
+echo "  nu = $NU (increased for fewer timesteps)"
+echo "  snapshots = $SNAPSHOTS (reduced I/O)"
+echo ""
 echo "Next steps:"
 echo "  1. Download results: scp -r user@ares:/path/plgrid_results ."
-echo "  2. Run analysis: jupyter notebook 6_complete_analysis.ipynb"
+echo "  2. Run analysis: jupyter notebook 4_analysis.ipynb"
 echo "=============================================================================="

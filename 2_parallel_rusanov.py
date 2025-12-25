@@ -55,9 +55,10 @@ class BurgersRusanovParallel:
         self.dt = 0.0
         self.n_steps = 0
 
-        # Cache for dt computation (reduce communication)
+        # Smart timestep caching (balance performance vs correctness)
         self.cached_dt = None
-        self.dt_recompute_interval = 100  # Recompute dt every N steps
+        self.cached_max_speed = None
+        self.dt_recompute_interval = 10  # Recompute every N steps (conservative)
 
         # Storage for snapshots (only on root)
         if self.rank == 0:
@@ -219,42 +220,64 @@ class BurgersRusanovParallel:
 
     def compute_dt(self) -> float:
         """
-        Compute time step based on CFL condition (global minimum).
+        Compute time step with smart caching for performance.
 
-        OPTIMIZATION: Only recompute every dt_recompute_interval steps
-        to reduce expensive allreduce operations (from 288k to ~2.8k calls).
+        Recomputes dt when:
+        1. First call (no cache)
+        2. Every dt_recompute_interval steps (periodic safety)
+        3. max(|u|) changes significantly (>5% - adaptive safety)
+
+        For Burgers equation: dt <= CFL * dx / max(|u|)
+        For viscous term: dt <= 0.25 * dx^2 / nu
+
+        Returns:
+            Time step satisfying both stability conditions
         """
-        # Only recompute dt periodically to reduce communication overhead
-        if self.cached_dt is None or self.n_steps % self.dt_recompute_interval == 0:
-            # Local maximum speed
-            max_speed_local = np.max(np.abs(self.u[1:-1]))
+        # Local maximum speed (always compute - cheap)
+        max_speed_local = np.max(np.abs(self.u[1:-1]))
 
-            # Global maximum speed (EXPENSIVE: requires allreduce synchronization)
+        # Decide if we need global reduction (expensive)
+        needs_recompute = (
+            self.cached_dt is None or  # First call
+            self.n_steps % self.dt_recompute_interval == 0 or  # Periodic safety
+            (self.cached_max_speed is not None and
+             abs(max_speed_local - self.cached_max_speed) / max(self.cached_max_speed, 1e-10) > 0.05)  # 5% change
+        )
+
+        if needs_recompute:
+            # Global maximum speed across all processes
             max_speed = self.comm.allreduce(max_speed_local, op=MPI.MAX)
 
-            if max_speed > 1e-10:
-                dt_convection = self.cfl * self.dx / max_speed
-            else:
-                dt_convection = self.cfl * self.dx / 1e-10
+            # Ensure non-zero denominator
+            max_speed = max(max_speed, 1e-10)
 
+            # CFL condition for convection
+            dt_convection = self.cfl * self.dx / max_speed
+
+            # Stability condition for diffusion
             if self.nu > 0:
-                # Conservative diffusion stability factor (0.25 instead of 0.5)
                 dt_diffusion = 0.25 * self.dx**2 / self.nu
                 self.cached_dt = min(dt_convection, dt_diffusion)
             else:
                 self.cached_dt = dt_convection
 
+            # Store max_speed for next iteration's change detection
+            self.cached_max_speed = max_speed_local
+
         return self.cached_dt
 
     def step(self):
         """Perform one time step using the Rusanov method."""
+        # Exchange ghost cells FIRST to get current boundary values
+        self._exchange_halos()
+
         # Compute time step (synchronized across all processes)
         self.dt = self.compute_dt()
 
         if self.t + self.dt > self.t_final:
             self.dt = self.t_final - self.t
 
-        # Compute fluxes at interfaces (using ghost cells)
+        # Compute fluxes at interfaces (using CURRENT ghost cells)
         u_left = self.u[:-1]
         u_right = self.u[1:]
         f_interfaces = self.rusanov_flux(u_left, u_right)
@@ -272,9 +295,6 @@ class BurgersRusanovParallel:
             )
 
         self.u = u_new
-
-        # Exchange ghost cells with neighbors
-        self._exchange_halos()
 
         # Update time
         self.t += self.dt
