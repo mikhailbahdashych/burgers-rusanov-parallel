@@ -2,10 +2,10 @@
   "method": "rusanov_mpi",
   "nx": 1200,
   "processes": 1,
-  "n_steps": 8640,
-  "time": 0.3525933548808098,
+  "n_steps": 5760,
+  "time": 0.3301853537559509,
   "converged": true,
-  "t_final": 0.15,
+  "t_final": 0.1,
   "cfl": 0.2,
   "nu": 0.01,
   "initial_condition": "step"

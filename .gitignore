@@ -9,10 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-# AI
-.claude
-CLAUDE.md
-
 # Results and outputs
 *.jpg
 *.mp4

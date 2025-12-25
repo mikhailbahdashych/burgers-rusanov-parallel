@@ -1,0 +1,675 @@
+==============================================================================
+BURGERS EQUATION PARALLEL SCALING EXPERIMENTS
+==============================================================================
+Parameters: t_final=0.1, nu=0.3, CFL=0.3, IC=sine
+Job ID: 18890234
+Nodes: ac[0433,0446]
+Start time: Thu Dec 25 19:55:27 CET 2025
+==============================================================================
+
+
+==============================================================================
+QUICK VALIDATION TEST
+==============================================================================
+Running quick test to ensure fixed code works correctly...
+
+Domain decomposition:
+  Total processes: 1
+  Global grid points: 300
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 1
+Global grid points: 300
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.01
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 541: t = 0.005009, dt = 9.259259e-06, max(|u|) = 0.971034
+Step 1080: t = 0.010000, dt = 9.259259e-06, max(|u|) = 0.943881
+Step 1081: t = 0.010000, dt = 5.204170e-17, max(|u|) = 0.943881
+
+Simulation complete!
+Total time steps: 1081
+Elapsed time: 0.052928 seconds
+Average time per step: 4.896177e-05 seconds
+
+Results saved to plgrid_results/validation_test.npz
+Timing data saved to plgrid_results/validation_test.json
+
+Maximum gradient: 2.860237
+Moderate discontinuities detected
+[OK] Validation test passed - proceeding with full experiments
+
+
+==============================================================================
+PART 1: WEAK SCALING EXPERIMENTS
+==============================================================================
+Strategy: Keep 300 cells per processor constant
+Expected: Demonstrates weak scaling behavior
+
+----------------------------------------------------------------------
+Weak Scaling: P=1, nx=300 (300 cells/proc)
+----------------------------------------------------------------------
+Domain decomposition:
+  Total processes: 1
+  Global grid points: 300
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 1
+Global grid points: 300
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 3600: t = 0.033333, dt = 9.259259e-06, max(|u|) = 0.836295
+Step 7201: t = 0.066676, dt = 9.259259e-06, max(|u|) = 0.726179
+Step 10800: t = 0.100000, dt = 9.259259e-06, max(|u|) = 0.652179
+
+Simulation complete!
+Total time steps: 10800
+Elapsed time: 0.517916 seconds
+Average time per step: 4.795522e-05 seconds
+
+Results saved to plgrid_results/burgers_weak_nx300_P1.npz
+Timing data saved to plgrid_results/burgers_weak_nx300_P1.json
+
+Maximum gradient: 0.992097
+[OK] Success: plgrid_results/burgers_weak_nx300_P1.npz
+
+----------------------------------------------------------------------
+Weak Scaling: P=4, nx=1200 (300 cells/proc)
+----------------------------------------------------------------------
+Domain decomposition:
+  Total processes: 4
+  Global grid points: 1200
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 4
+Global grid points: 1200
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 57600: t = 0.033333, dt = 5.787037e-07, max(|u|) = 0.836711
+Step 115201: t = 0.066667, dt = 5.787037e-07, max(|u|) = 0.726668
+Step 172800: t = 0.100000, dt = 5.787036e-07, max(|u|) = 0.652605
+
+Simulation complete!
+Total time steps: 172800
+Elapsed time: 10.841859 seconds
+Average time per step: 6.274224e-05 seconds
+
+Results saved to plgrid_results/burgers_weak_nx1200_P4.npz
+Timing data saved to plgrid_results/burgers_weak_nx1200_P4.json
+
+Maximum gradient: 0.994806
+[OK] Success: plgrid_results/burgers_weak_nx1200_P4.npz
+
+----------------------------------------------------------------------
+Weak Scaling: P=8, nx=2400 (300 cells/proc)
+----------------------------------------------------------------------
+Domain decomposition:
+  Total processes: 8
+  Global grid points: 2400
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 8
+Global grid points: 2400
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 230400: t = 0.033333, dt = 1.446759e-07, max(|u|) = 0.836779
+Step 460800: t = 0.066667, dt = 1.446759e-07, max(|u|) = 0.726746
+Step 691200: t = 0.100000, dt = 1.446759e-07, max(|u|) = 0.652675
+Step 691201: t = 0.100000, dt = 1.284556e-12, max(|u|) = 0.652675
+
+Simulation complete!
+Total time steps: 691201
+Elapsed time: 44.307676 seconds
+Average time per step: 6.410245e-05 seconds
+
+Results saved to plgrid_results/burgers_weak_nx2400_P8.npz
+Timing data saved to plgrid_results/burgers_weak_nx2400_P8.json
+
+Maximum gradient: 0.995245
+[OK] Success: plgrid_results/burgers_weak_nx2400_P8.npz
+
+----------------------------------------------------------------------
+Weak Scaling: P=16, nx=4800 (300 cells/proc)
+----------------------------------------------------------------------
+Domain decomposition:
+  Total processes: 16
+  Global grid points: 4800
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 16
+Global grid points: 4800
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 921601: t = 0.033333, dt = 3.616898e-08, max(|u|) = 0.836813
+Step 1843200: t = 0.066667, dt = 3.616898e-08, max(|u|) = 0.726784
+Step 2764800: t = 0.100000, dt = 3.616898e-08, max(|u|) = 0.652710
+Step 2764801: t = 0.100000, dt = 4.026446e-12, max(|u|) = 0.652710
+
+Simulation complete!
+Total time steps: 2764801
+Elapsed time: 224.666996 seconds
+Average time per step: 8.125973e-05 seconds
+
+Results saved to plgrid_results/burgers_weak_nx4800_P16.npz
+Timing data saved to plgrid_results/burgers_weak_nx4800_P16.json
+
+Maximum gradient: 0.995463
+[OK] Success: plgrid_results/burgers_weak_nx4800_P16.npz
+
+----------------------------------------------------------------------
+Weak Scaling: P=24, nx=7200 (300 cells/proc)
+----------------------------------------------------------------------
+Domain decomposition:
+  Total processes: 24
+  Global grid points: 7200
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 24
+Global grid points: 7200
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 2073600: t = 0.033333, dt = 1.607510e-08, max(|u|) = 0.836824
+Step 4147201: t = 0.066667, dt = 1.607510e-08, max(|u|) = 0.726797
+Step 6220800: t = 0.100000, dt = 1.607510e-08, max(|u|) = 0.652722
+Step 6220801: t = 0.100000, dt = 1.553853e-11, max(|u|) = 0.652722
+
+Simulation complete!
+Total time steps: 6220801
+Elapsed time: 527.081042 seconds
+Average time per step: 8.472881e-05 seconds
+
+Results saved to plgrid_results/burgers_weak_nx7200_P24.npz
+Timing data saved to plgrid_results/burgers_weak_nx7200_P24.json
+
+Maximum gradient: 0.995536
+[OK] Success: plgrid_results/burgers_weak_nx7200_P24.npz
+
+
+==============================================================================
+PART 2: STRONG SCALING EXPERIMENTS
+==============================================================================
+Strategy: Fixed grid sizes, increasing processors
+Focus on larger grids for better scaling demonstration
+
+--- Grid Size: nx=1200 ---
+  P=1: 1200 cells/proc
+Domain decomposition:
+  Total processes: 1
+  Global grid points: 1200
+  Local grid points per process: ~1200
+
+Starting parallel Rusanov solver...
+MPI processes: 1
+Global grid points: 1200
+Local grid points: 1200
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 57600: t = 0.033333, dt = 5.787037e-07, max(|u|) = 0.836711
+Step 115201: t = 0.066667, dt = 5.787037e-07, max(|u|) = 0.726668
+Step 172800: t = 0.100000, dt = 5.787036e-07, max(|u|) = 0.652605
+
+Simulation complete!
+Total time steps: 172800
+Elapsed time: 10.260518 seconds
+Average time per step: 5.937800e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx1200_P1.npz
+Timing data saved to plgrid_results/burgers_strong_nx1200_P1.json
+
+Maximum gradient: 0.994806
+    [OK] plgrid_results/burgers_strong_nx1200_P1.npz
+  P=2: 600 cells/proc
+Domain decomposition:
+  Total processes: 2
+  Global grid points: 1200
+  Local grid points per process: ~600
+
+Starting parallel Rusanov solver...
+MPI processes: 2
+Global grid points: 1200
+Local grid points: 600
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 57600: t = 0.033333, dt = 5.787037e-07, max(|u|) = 0.836711
+Step 115201: t = 0.066667, dt = 5.787037e-07, max(|u|) = 0.726668
+Step 172800: t = 0.100000, dt = 5.787036e-07, max(|u|) = 0.652605
+
+Simulation complete!
+Total time steps: 172800
+Elapsed time: 11.075984 seconds
+Average time per step: 6.409713e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx1200_P2.npz
+Timing data saved to plgrid_results/burgers_strong_nx1200_P2.json
+
+Maximum gradient: 0.994806
+    [OK] plgrid_results/burgers_strong_nx1200_P2.npz
+  P=4: 300 cells/proc
+Domain decomposition:
+  Total processes: 4
+  Global grid points: 1200
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 4
+Global grid points: 1200
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 57600: t = 0.033333, dt = 5.787037e-07, max(|u|) = 0.836711
+Step 115201: t = 0.066667, dt = 5.787037e-07, max(|u|) = 0.726668
+Step 172800: t = 0.100000, dt = 5.787036e-07, max(|u|) = 0.652605
+
+Simulation complete!
+Total time steps: 172800
+Elapsed time: 10.672463 seconds
+Average time per step: 6.176194e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx1200_P4.npz
+Timing data saved to plgrid_results/burgers_strong_nx1200_P4.json
+
+Maximum gradient: 0.994806
+    [OK] plgrid_results/burgers_strong_nx1200_P4.npz
+  P=8: 150 cells/proc
+Domain decomposition:
+  Total processes: 8
+  Global grid points: 1200
+  Local grid points per process: ~150
+
+Starting parallel Rusanov solver...
+MPI processes: 8
+Global grid points: 1200
+Local grid points: 150
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 57600: t = 0.033333, dt = 5.787037e-07, max(|u|) = 0.836711
+Step 115201: t = 0.066667, dt = 5.787037e-07, max(|u|) = 0.726668
+Step 172800: t = 0.100000, dt = 5.787036e-07, max(|u|) = 0.652605
+
+Simulation complete!
+Total time steps: 172800
+Elapsed time: 10.799949 seconds
+Average time per step: 6.249970e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx1200_P8.npz
+Timing data saved to plgrid_results/burgers_strong_nx1200_P8.json
+
+Maximum gradient: 0.994806
+    [OK] plgrid_results/burgers_strong_nx1200_P8.npz
+
+--- Grid Size: nx=2400 ---
+  P=1: 2400 cells/proc
+Domain decomposition:
+  Total processes: 1
+  Global grid points: 2400
+  Local grid points per process: ~2400
+
+Starting parallel Rusanov solver...
+MPI processes: 1
+Global grid points: 2400
+Local grid points: 2400
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 230400: t = 0.033333, dt = 1.446759e-07, max(|u|) = 0.836779
+Step 460800: t = 0.066667, dt = 1.446759e-07, max(|u|) = 0.726746
+Step 691200: t = 0.100000, dt = 1.446759e-07, max(|u|) = 0.652675
+Step 691201: t = 0.100000, dt = 1.284556e-12, max(|u|) = 0.652675
+
+Simulation complete!
+Total time steps: 691201
+Elapsed time: 46.314010 seconds
+Average time per step: 6.700513e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx2400_P1.npz
+Timing data saved to plgrid_results/burgers_strong_nx2400_P1.json
+
+Maximum gradient: 0.995245
+    [OK] plgrid_results/burgers_strong_nx2400_P1.npz
+  P=4: 600 cells/proc
+Domain decomposition:
+  Total processes: 4
+  Global grid points: 2400
+  Local grid points per process: ~600
+
+Starting parallel Rusanov solver...
+MPI processes: 4
+Global grid points: 2400
+Local grid points: 600
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 230400: t = 0.033333, dt = 1.446759e-07, max(|u|) = 0.836779
+Step 460800: t = 0.066667, dt = 1.446759e-07, max(|u|) = 0.726746
+Step 691200: t = 0.100000, dt = 1.446759e-07, max(|u|) = 0.652675
+Step 691201: t = 0.100000, dt = 1.284556e-12, max(|u|) = 0.652675
+
+Simulation complete!
+Total time steps: 691201
+Elapsed time: 47.241407 seconds
+Average time per step: 6.834684e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx2400_P4.npz
+Timing data saved to plgrid_results/burgers_strong_nx2400_P4.json
+
+Maximum gradient: 0.995245
+    [OK] plgrid_results/burgers_strong_nx2400_P4.npz
+  P=8: 300 cells/proc
+Domain decomposition:
+  Total processes: 8
+  Global grid points: 2400
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 8
+Global grid points: 2400
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 230400: t = 0.033333, dt = 1.446759e-07, max(|u|) = 0.836779
+Step 460800: t = 0.066667, dt = 1.446759e-07, max(|u|) = 0.726746
+Step 691200: t = 0.100000, dt = 1.446759e-07, max(|u|) = 0.652675
+Step 691201: t = 0.100000, dt = 1.284556e-12, max(|u|) = 0.652675
+
+Simulation complete!
+Total time steps: 691201
+Elapsed time: 44.312025 seconds
+Average time per step: 6.410874e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx2400_P8.npz
+Timing data saved to plgrid_results/burgers_strong_nx2400_P8.json
+
+Maximum gradient: 0.995245
+    [OK] plgrid_results/burgers_strong_nx2400_P8.npz
+  P=16: 150 cells/proc
+Domain decomposition:
+  Total processes: 16
+  Global grid points: 2400
+  Local grid points per process: ~150
+
+Starting parallel Rusanov solver...
+MPI processes: 16
+Global grid points: 2400
+Local grid points: 150
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 230400: t = 0.033333, dt = 1.446759e-07, max(|u|) = 0.836779
+Step 460800: t = 0.066667, dt = 1.446759e-07, max(|u|) = 0.726746
+Step 691200: t = 0.100000, dt = 1.446759e-07, max(|u|) = 0.652675
+Step 691201: t = 0.100000, dt = 1.284556e-12, max(|u|) = 0.652675
+
+Simulation complete!
+Total time steps: 691201
+Elapsed time: 58.281998 seconds
+Average time per step: 8.431990e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx2400_P16.npz
+Timing data saved to plgrid_results/burgers_strong_nx2400_P16.json
+
+Maximum gradient: 0.995245
+    [OK] plgrid_results/burgers_strong_nx2400_P16.npz
+
+--- Grid Size: nx=4800 ---
+  P=1: 4800 cells/proc
+Domain decomposition:
+  Total processes: 1
+  Global grid points: 4800
+  Local grid points per process: ~4800
+
+Starting parallel Rusanov solver...
+MPI processes: 1
+Global grid points: 4800
+Local grid points: 4800
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 921601: t = 0.033333, dt = 3.616898e-08, max(|u|) = 0.836813
+Step 1843200: t = 0.066667, dt = 3.616898e-08, max(|u|) = 0.726784
+Step 2764800: t = 0.100000, dt = 3.616898e-08, max(|u|) = 0.652710
+Step 2764801: t = 0.100000, dt = 4.026446e-12, max(|u|) = 0.652710
+
+Simulation complete!
+Total time steps: 2764801
+Elapsed time: 242.127393 seconds
+Average time per step: 8.757498e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx4800_P1.npz
+Timing data saved to plgrid_results/burgers_strong_nx4800_P1.json
+
+Maximum gradient: 0.995463
+    [OK] plgrid_results/burgers_strong_nx4800_P1.npz
+  P=4: 1200 cells/proc
+Domain decomposition:
+  Total processes: 4
+  Global grid points: 4800
+  Local grid points per process: ~1200
+
+Starting parallel Rusanov solver...
+MPI processes: 4
+Global grid points: 4800
+Local grid points: 1200
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 921601: t = 0.033333, dt = 3.616898e-08, max(|u|) = 0.836813
+Step 1843200: t = 0.066667, dt = 3.616898e-08, max(|u|) = 0.726784
+Step 2764800: t = 0.100000, dt = 3.616898e-08, max(|u|) = 0.652710
+Step 2764801: t = 0.100000, dt = 4.026446e-12, max(|u|) = 0.652710
+
+Simulation complete!
+Total time steps: 2764801
+Elapsed time: 196.844319 seconds
+Average time per step: 7.119656e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx4800_P4.npz
+Timing data saved to plgrid_results/burgers_strong_nx4800_P4.json
+
+Maximum gradient: 0.995463
+    [OK] plgrid_results/burgers_strong_nx4800_P4.npz
+  P=8: 600 cells/proc
+Domain decomposition:
+  Total processes: 8
+  Global grid points: 4800
+  Local grid points per process: ~600
+
+Starting parallel Rusanov solver...
+MPI processes: 8
+Global grid points: 4800
+Local grid points: 600
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 921601: t = 0.033333, dt = 3.616898e-08, max(|u|) = 0.836813
+Step 1843200: t = 0.066667, dt = 3.616898e-08, max(|u|) = 0.726784
+Step 2764800: t = 0.100000, dt = 3.616898e-08, max(|u|) = 0.652710
+Step 2764801: t = 0.100000, dt = 4.026446e-12, max(|u|) = 0.652710
+
+Simulation complete!
+Total time steps: 2764801
+Elapsed time: 190.336619 seconds
+Average time per step: 6.884279e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx4800_P8.npz
+Timing data saved to plgrid_results/burgers_strong_nx4800_P8.json
+
+Maximum gradient: 0.995463
+    [OK] plgrid_results/burgers_strong_nx4800_P8.npz
+  P=16: 300 cells/proc
+Domain decomposition:
+  Total processes: 16
+  Global grid points: 4800
+  Local grid points per process: ~300
+
+Starting parallel Rusanov solver...
+MPI processes: 16
+Global grid points: 4800
+Local grid points: 300
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 921601: t = 0.033333, dt = 3.616898e-08, max(|u|) = 0.836813
+Step 1843200: t = 0.066667, dt = 3.616898e-08, max(|u|) = 0.726784
+Step 2764800: t = 0.100000, dt = 3.616898e-08, max(|u|) = 0.652710
+Step 2764801: t = 0.100000, dt = 4.026446e-12, max(|u|) = 0.652710
+
+Simulation complete!
+Total time steps: 2764801
+Elapsed time: 255.149874 seconds
+Average time per step: 9.228508e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx4800_P16.npz
+Timing data saved to plgrid_results/burgers_strong_nx4800_P16.json
+
+Maximum gradient: 0.995463
+    [OK] plgrid_results/burgers_strong_nx4800_P16.npz
+  P=24: 200 cells/proc
+Domain decomposition:
+  Total processes: 24
+  Global grid points: 4800
+  Local grid points per process: ~200
+
+Starting parallel Rusanov solver...
+MPI processes: 24
+Global grid points: 4800
+Local grid points: 200
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.3
+Viscosity: 0.3
+
+Step 921601: t = 0.033333, dt = 3.616898e-08, max(|u|) = 0.836813
+Step 1843200: t = 0.066667, dt = 3.616898e-08, max(|u|) = 0.726784
+Step 2764800: t = 0.100000, dt = 3.616898e-08, max(|u|) = 0.652710
+Step 2764801: t = 0.100000, dt = 4.026446e-12, max(|u|) = 0.652710
+
+Simulation complete!
+Total time steps: 2764801
+Elapsed time: 258.806410 seconds
+Average time per step: 9.360761e-05 seconds
+
+Results saved to plgrid_results/burgers_strong_nx4800_P24.npz
+Timing data saved to plgrid_results/burgers_strong_nx4800_P24.json
+
+Maximum gradient: 0.995463
+    [OK] plgrid_results/burgers_strong_nx4800_P24.npz
+
+
+==============================================================================
+PART 3: SHOCK WAVE DEMONSTRATION
+==============================================================================
+Running one shock demo for visualization
+
+--- Low Viscosity (nu=0.01) with Step IC ---
+Domain decomposition:
+  Total processes: 1
+  Global grid points: 1200
+  Local grid points per process: ~1200
+
+Starting parallel Rusanov solver...
+MPI processes: 1
+Global grid points: 1200
+Local grid points: 1200
+Domain: [0.0, 1.0]
+Final time: 0.1
+CFL number: 0.2
+Viscosity: 0.01
+
+Step 1153: t = 0.020017, dt = 1.736111e-05, max(|u|) = 1.000000
+Step 2304: t = 0.040000, dt = 1.736111e-05, max(|u|) = 1.000000
+Step 3456: t = 0.060000, dt = 1.736111e-05, max(|u|) = 1.000000
+Step 4608: t = 0.080000, dt = 1.736111e-05, max(|u|) = 1.000000
+Step 5760: t = 0.100000, dt = 1.736111e-05, max(|u|) = 1.000000
+
+Simulation complete!
+Total time steps: 5760
+Elapsed time: 0.330185 seconds
+Average time per step: 5.732385e-05 seconds
+
+Results saved to plgrid_results/burgers_shock_step_nu001.npz
+Timing data saved to plgrid_results/burgers_shock_step_nu001.json
+
+Maximum gradient: 15.004705
+Strong shock waves detected!
+
+
+==============================================================================
+ALL EXPERIMENTS COMPLETED!
+==============================================================================
+End time: Thu Dec 25 20:32:18 CET 2025
+
+Results summary:
+  Weak scaling: 5 runs (P=1,4,8,16,24)
+  Strong scaling: 3 grid sizes × multiple P = ~17 runs
+  Shock wave demo: 1 run
+  Total experiments: ~23 runs
+
+Total result files: 20
+
+Parameters used:
+  t_final = 0.1 (reduced for speed)
+  nu = 0.3 (increased for fewer timesteps)
+  snapshots = 3 (reduced I/O)
+
+Next steps:
+  1. Download results: scp -r user@ares:/path/plgrid_results .
+  2. Run analysis: jupyter notebook 4_analysis.ipynb
+==============================================================================
